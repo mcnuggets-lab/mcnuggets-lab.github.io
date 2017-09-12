@@ -87,18 +87,18 @@ class App extends React.Component {
                 <h1>Binomial Distribution</h1>
                 <table border={1} style={table_style}>
                     <colgroup>
-                        <col style={{width:"40%"}} />
-                        <col style={{width:"30%"}} />
-                        <col style={{width:"30%"}} />
+                        <col style={{width:"50%"}} />
+                        <col style={{width:"25%"}} />
+                        <col style={{width:"25%"}} />
                     </colgroup>
                     <tbody>
                         <tr>
-                            <td><input type="range" min="1" max="12" ref="nValue" value={this.state.n} style={{width:200, display: "inline"}} onChange={this.handleChange} /></td>
+                            <td><input type="range" min="1" max="12" ref="nValue" value={this.state.n} style={{width:"90%", display: "inline"}} onChange={this.handleChange} /></td>
                             <td>{disp1_text}</td>
                             <td>{disp3_text}</td>
                         </tr>
                         <tr>
-                            <td><input type="range" min="0" max="100" ref="pValue" value={this.state.p * 100} style={{width:200, display: "inline"}} onChange={this.handleChange} /></td>
+                            <td><input type="range" min="0" max="100" ref="pValue" value={this.state.p * 100} style={{width:"90%", display: "inline"}} onChange={this.handleChange} /></td>
                             <td>{disp2_text}</td>
                             <td>{disp4_text}</td>
                         </tr>
