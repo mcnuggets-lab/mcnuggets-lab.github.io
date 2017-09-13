@@ -4,6 +4,8 @@
 
 
 
+const MAX_N = 12;
+
 class App extends React.Component {
     
     constructor() {
@@ -11,12 +13,17 @@ class App extends React.Component {
         
         // JSXGraph configs
         JXG.Options.text.useMathJax = true;
+        JXG.Options.axis.ticks = JXG.merge(JXG.Options.axis.ticks, {
+            drawLabels: false,
+        });
         
         var brd = null;
+        var chart = null;
         var firstDrawn = false;
           
         this.state = {
             brd: brd,
+            chart: chart,
             firstDrawn: firstDrawn,
             n: 4,
             p: 0.50
@@ -32,13 +39,16 @@ class App extends React.Component {
         });
     }
     
+    // board initialization goes here
     componentDidMount() {
         if (!this.state.brd) {
             // if board is not initialized, then initialize it
             this.setState({
                 brd: JXG.JSXGraph.initBoard('box1', {
-                    axis: true, 
-                    boundingbox: [-5, 5, 5, -5],
+                    axis: false, 
+                    grid: false,
+                    boundingbox: [-1, 1.1, 12.5, -0.05],
+                    keepaspectratio: false,
                     showNavigation: false,
                     showCopyright: false
                 }) 
@@ -47,16 +57,46 @@ class App extends React.Component {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, ReactDOM.findDOMNode(this)]);
     }
     
+    // drawings occur here
     componentDidUpdate() {
-        // drawings occur here
+        var brd = this.state.brd;
+        var newbdb = [-1 - (this.state.n + 1.8) / 19, 1.1, this.state.n + 0.8, -0.05];
+        
+        // data to draw
+        var xData = [...Array(MAX_N + 1).keys()]; // x-data to draw
+        var yData = xData.map((x) => {
+            return (() => binomialProb(this.state.n, this.state.p, x));
+        }); // y-data to draw
         if (!this.state.firstDrawn) {
-            var slider1 = this.state.brd.create('slider',[[0.5,-3],[3.5,-3],[-3,1,3]], { name:"c", snapWidth: 0.1 });
-            var f = this.state.brd.create('functiongraph', [(x) => (x*x+this.state.n / 4), -10, 10], {strokeWidth:1});
+            // draw axes, ticks and labels
+            var xAxis = brd.create('axis', [[0, 0], [1, 0]], { 
+                name: 'x', ticks: { majorHeight: 0, minorHeight: 0 }, withLabel: false, drawZero: true, highlight: false, strokeColor: 'gray', fixed: true 
+            });
+            var yAxis = brd.create('axis', [[-1, 0], [-1, 1]], { 
+                name: 'y', ticks: { majorHeight: 0, minorHeight: 0 }, withLabel: false, highlight: false, strokeColor: 'gray', fixed: true 
+            });
+            
+            var xTicks = brd.create('ticks', [xAxis, xData], { highlight: false, drawLabels: true, label: { offset: [0, -15], anchorX: 'middle' } });
+            var yTicks = brd.create('ticks', [yAxis, [...Array(10).keys()].map((x) => 0.1 * (x+1))], { highlight: false, drawLabels: true, label: { offset: [-10, 0], anchorX: 'right' } }); // ticks 0.1, 0.2, etc.
+            
+            var yLabels = [];
+            for (let i = 0; i <= MAX_N; i++) {
+                yLabels.push(brd.create('text', [i, () => yData[i]() + 0.015, () => (this.state.n >= i) ? yData[i]().toFixed(4) : ""], {
+                    fixed: true, highlight: false, anchorX: "middle"
+                }));
+            }
+            
+            // draw chart
+            var chart = brd.create('chart', [xData, yData], { chartStyle: 'bar', width: 0.7, labels: yData, colors: ['blue'] });
             this.setState({
-                firstDrawn: true
+                firstDrawn: true,
+                chart: chart
             });
         }
-        this.state.brd.update();
+
+        // otherwise only update the board
+        brd.setBoundingBox(newbdb);
+        brd.update();
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, ReactDOM.findDOMNode(this)]);
     }
     
@@ -73,6 +113,11 @@ class App extends React.Component {
             border: "none",
             borderRadius: 0
         };
+        
+        var slider_style = {
+            width: "90%",
+            display: "inline"
+        }
         
         var n = this.state.n;
         var p = this.state.p;
@@ -93,12 +138,12 @@ class App extends React.Component {
                     </colgroup>
                     <tbody>
                         <tr>
-                            <td><input type="range" min="1" max="12" ref="nValue" value={this.state.n} style={{width:"90%", display: "inline"}} onChange={this.handleChange} /></td>
+                            <td><input type="range" min="1" max={MAX_N} ref="nValue" value={this.state.n} style={slider_style} onChange={this.handleChange} /></td>
                             <td>{disp1_text}</td>
                             <td>{disp3_text}</td>
                         </tr>
                         <tr>
-                            <td><input type="range" min="0" max="100" ref="pValue" value={this.state.p * 100} style={{width:"90%", display: "inline"}} onChange={this.handleChange} /></td>
+                            <td><input type="range" min="0" max="100" ref="pValue" value={this.state.p * 100} style={slider_style} onChange={this.handleChange} /></td>
                             <td>{disp2_text}</td>
                             <td>{disp4_text}</td>
                         </tr>
