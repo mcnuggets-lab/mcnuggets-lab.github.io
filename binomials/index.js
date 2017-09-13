@@ -47,6 +47,8 @@ class App extends React.Component {
                 brd: JXG.JSXGraph.initBoard('box1', {
                     axis: false, 
                     grid: false,
+                    zoom: { enabled: false },
+                    pan: { enabled: false },
                     boundingbox: [-1, 1.1, 12.5, -0.05],
                     keepaspectratio: false,
                     showNavigation: false,
@@ -76,8 +78,9 @@ class App extends React.Component {
                 name: 'y', ticks: { majorHeight: 0, minorHeight: 0 }, withLabel: false, highlight: false, strokeColor: 'gray', fixed: true 
             });
             
-            var xTicks = brd.create('ticks', [xAxis, xData], { highlight: false, drawLabels: true, label: { offset: [0, -15], anchorX: 'middle' } });
-            var yTicks = brd.create('ticks', [yAxis, [...Array(10).keys()].map((x) => 0.1 * (x+1))], { highlight: false, drawLabels: true, label: { offset: [-10, 0], anchorX: 'right' } }); // ticks 0.1, 0.2, etc.
+            var xTicks = brd.create('ticks', [xAxis, xData], { highlight: false, drawLabels: true, label: { offset: [0, -15], highlight: false, anchorX: 'middle' } });
+            var yTicks = brd.create('ticks', [yAxis, [...Array(10).keys()].map((x) => 0.1 * (x+1))], 
+                { highlight: false, drawLabels: true, label: { offset: [-10, 0], highlight: false, anchorX: 'right' } }); // ticks 0.1, 0.2, etc.
             
             var yLabels = [];
             for (let i = 0; i <= MAX_N; i++) {
