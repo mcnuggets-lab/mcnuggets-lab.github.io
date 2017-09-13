@@ -133,8 +133,8 @@ class App extends React.Component {
                 <table border={1} style={table_style}>
                     <colgroup>
                         <col style={{width:"50%"}} />
-                        <col style={{width:"25%"}} />
-                        <col style={{width:"25%"}} />
+                        <col style={{width:"20%"}} />
+                        <col style={{width:"30%"}} />
                     </colgroup>
                     <tbody>
                         <tr>
