@@ -19,17 +19,21 @@ class App extends React.Component {
         
         var brd = null;
         var chart = null;
+        var checkboxNormal = null;
         var firstDrawn = false;
           
         this.state = {
             brd: brd,
             chart: chart,
+            checkboxNormal: checkboxNormal,
             firstDrawn: firstDrawn,
+            showNormal: false,
             n: 4,
             p: 0.50
         };
         
         this.handleChange = this.handleChange.bind(this);
+        //this.handleCheckbox = this.handleCheckbox.bind(this);
     }
     
     handleChange(event) {
@@ -38,6 +42,19 @@ class App extends React.Component {
             p: Number(this.refs.pValue.value / 100)
         });
     }
+    
+    handleCheckbox(checked) {
+        this.setState({
+            showNormal: checked
+        });
+    }
+    
+    /*handleCheckbox(event) {
+        console.log(event.target.checked);
+        this.setState({
+            showNormal: event.target.checked
+        });
+    }*/
     
     // board initialization goes here
     componentDidMount() {
@@ -70,6 +87,7 @@ class App extends React.Component {
             return (() => binomialProb(this.state.n, this.state.p, x));
         }); // y-data to draw
         if (!this.state.firstDrawn) {
+            
             // draw axes, ticks and labels
             var xAxis = brd.create('axis', [[0, 0], [1, 0]], { 
                 name: 'x', ticks: { majorHeight: 0, minorHeight: 0 }, withLabel: false, drawZero: true, highlight: false, strokeColor: 'gray', fixed: true 
@@ -89,16 +107,29 @@ class App extends React.Component {
                 }));
             }
             
+            // normal curve
+            var gaussian = (x) => {
+                let mu = this.state.n * this.state.p;
+                let sigma_sq = this.state.n * this.state.p * (1 - this.state.p);
+                return 1 / Math.sqrt(2 * Math.PI * sigma_sq) * (Math.E ** (-((x-mu)**2) / (2*sigma_sq)));
+            }
+            var checkboxNormal = brd.create("checkbox", [() => (-1 + 30 / 57 * (this.state.n + 1.8)), 1.06, 
+                "show corresponding normal curve"], { highlight: false, fixed: true, fontSize: 16 });
+            var f = brd.create("functiongraph", [gaussian, -20, 20], { strokeColor: "red", highlight: false, visible: () => this.state.showNormal });
+            JXG.addEvent(checkboxNormal.rendNodeCheckbox, 'change', () => this.handleCheckbox(checkboxNormal.Value()), checkboxNormal);
+            
             // draw chart
             var chart = brd.create('chart', [xData, yData], { chartStyle: 'bar', width: 0.7, labels: yData, colors: ['blue'] });
             this.setState({
                 firstDrawn: true,
-                chart: chart
+                chart: chart,
+                checkboxNormal: checkboxNormal
             });
         }
 
         // otherwise only update the board
         brd.setBoundingBox(newbdb);
+        if (this.state.checkboxNormal) this.state.checkboxNormal.setPosition(JXG.COORDS_BY_USER, [-1 + 30 / 57 * (this.state.n + 1.8), 1.06]);
         brd.update();
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, ReactDOM.findDOMNode(this)]);
     }
