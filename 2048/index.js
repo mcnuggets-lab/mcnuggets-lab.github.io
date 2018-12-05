@@ -119,10 +119,10 @@ class Game extends React.Component {
     super(props);
     this.BOARD_SIZE = 4;
     this.keydown = false;
-    this.testBoard = [[1024, 1024, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    // this.testBoard = [[1024, 1024, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
     this.state = {
-      // board: generateSquare(new Array(this.BOARD_SIZE).fill(new Array(this.BOARD_SIZE).fill(0))),
-      board: this.testBoard,
+      board: generateSquare(new Array(this.BOARD_SIZE).fill(new Array(this.BOARD_SIZE).fill(0))),
+      // board: this.testBoard,
       endGame: 0,  // whether the current game is over
       inTransit: false,  // whether the state of display is in the middle of transit
     };
