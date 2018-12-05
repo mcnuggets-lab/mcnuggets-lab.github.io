@@ -54,8 +54,24 @@ ol, ul {
   font-size: 500%;
 }
 
+.game-control {
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-left: 50px;
+  margin-top: 30px;
+}
+
 .reset-button {
   font-size: 150%;
+}
+
+.arrow-key:hover {
+  color: red;
+}
+
+.arrow-key:active {
+  color: rgba(255, 0, 0, 0.5);
 }
 
 

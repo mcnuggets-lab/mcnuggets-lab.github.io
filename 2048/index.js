@@ -73,23 +73,75 @@ class EndGameScreen extends React.Component {
 
 }
 
+class ControlPanel extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (<table>
+      <thead></thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>
+            <i className="arrow-key fas fa-arrow-alt-circle-up fa-7x" 
+                 onClick={ () => this.props.clickHandler(1) }></i>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>
+            <i className="arrow-key fas fa-arrow-alt-circle-left fa-7x"
+               onClick={ () => this.props.clickHandler(0) }></i>
+          </td>
+          <td></td>
+          <td>
+            <i className="arrow-key fas fa-arrow-alt-circle-right fa-7x"
+               onClick={ () => this.props.clickHandler(2) }></i>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <i className="arrow-key fas fa-arrow-alt-circle-down fa-7x"
+              onClick={ () => this.props.clickHandler(3) }></i>
+            </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>);
+  }
+}
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.BOARD_SIZE = 4;
     this.keydown = false;
-    // this.testBoard = [[1024, 1024, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    this.testBoard = [[1024, 1024, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
     this.state = {
-      board: generateSquare(new Array(this.BOARD_SIZE).fill(new Array(this.BOARD_SIZE).fill(0))),
-      // board: this.testBoard,
+      // board: generateSquare(new Array(this.BOARD_SIZE).fill(new Array(this.BOARD_SIZE).fill(0))),
+      board: this.testBoard,
       endGame: 0,  // whether the current game is over
       inTransit: false,  // whether the state of display is in the middle of transit
     };
 
     // bind the event handlers
+    this.moveHandler = this.moveHandler.bind(this);
     this.keydownAction = this.keydownAction.bind(this);
     this.keyupAction = this.keyupAction.bind(this);
     this.generateSquareAction = this.generateSquareAction.bind(this);
+  }
+
+  moveHandler(ind) {
+    if (!this.state.endGame && !this.state.inTransit) {
+      var [newBoard, hasChanged] = makeMove(this.state.board, ind);
+      this.setState({
+        board: newBoard,
+        inTransit: hasChanged,
+      });
+    }
   }
 
   keydownAction(e) {
@@ -98,11 +150,7 @@ class Game extends React.Component {
       var keyPressed = e.key;
       var validKeys = ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"];
       if (validKeys.includes(keyPressed)) {
-        var [newBoard, hasChanged] = makeMove(this.state.board, validKeys.indexOf(keyPressed));
-        this.setState({
-          board: newBoard,
-          inTransit: hasChanged,
-        });
+        this.moveHandler(validKeys.indexOf(keyPressed));
       }
     }
   }
@@ -148,6 +196,9 @@ class Game extends React.Component {
                         <Board board={ this.state.board } />
                     </div>
                     <EndGameScreen endGame={ this.state.endGame } screenLength={ screenLength } />
+                    <div className="game-control">
+                      <ControlPanel clickHandler={ this.moveHandler } />
+                    </div>
                 </div>
                 <div className="game-reset">
                     <p><button className="reset-button" onClick = { () => this.restart() }>Restart</button></p>
