@@ -19,13 +19,14 @@
           var decoded = l.search.slice(1).split('&').map(function(s) {
             return s.replace(/~and~/g, '&');
           }).join('?');
+          var basePath = l.pathname.endsWith('/') ? l.pathname.slice(0, -1) : l.pathname;
           window.history.replaceState(null, null,
-            l.pathname.slice(0, -1) + decoded + l.hash
+            basePath + decoded + l.hash
           );
         }
       }(window.location));
     </script>
-    <script type="module" crossorigin src="/euclid-in-motion/assets/index-pyqUMN3k.js"></script>
+    <script type="module" crossorigin src="/euclid-in-motion/assets/index-rX-klGOC.js"></script>
     <link rel="modulepreload" crossorigin href="/euclid-in-motion/assets/react-CQc3Zyh3.js">
     <link rel="modulepreload" crossorigin href="/euclid-in-motion/assets/katex-DYcwM5N2.js">
     <link rel="stylesheet" crossorigin href="/euclid-in-motion/assets/katex-DYwQiUsm.css">
